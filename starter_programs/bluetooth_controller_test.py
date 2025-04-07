@@ -54,8 +54,8 @@ try:
         if abs(right_x) > 0.1 or abs(right_y) > 0.1:
             print(f"Right Joystick: X={right_x:.2f}, Y={right_y:.2f}")
 
-        motor_driver.set_motor_speed("motor1", int(left_y * 20))  # Forward at 50% speed
-        motor_driver.set_motor_speed("motor2", int(right_y * 20)) # Reverse at 50% speed
+        motor_driver.set_motor_speed("motor1", int(left_y * 100))  # Forward at 50% speed
+        motor_driver.set_motor_speed("motor2", int(right_y * 100)) # Reverse at 50% speed
 
         pygame.time.wait(100)  # Delay to avoid excessive CPU usage
 

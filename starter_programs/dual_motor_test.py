@@ -32,7 +32,7 @@ class DualMotorDriver:
         
         speed = max(-100, min(100, speed))  # Constrain speed to -100 to 100
         duty_cycle = abs(speed)
-        
+        print(duty_cycle)
         if speed > 0:
             self.pwm[motor]["in1"].ChangeDutyCycle(duty_cycle)
             self.pwm[motor]["in2"].ChangeDutyCycle(0)
