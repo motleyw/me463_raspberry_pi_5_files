@@ -1,5 +1,13 @@
 import pygame
 from dual_motor_test import DualMotorDriver
+from encoder_reader import EncoderReader
+
+# Start encoder monitoring
+encoder1 = EncoderReader(pin_a=21, pin_b=22)
+encoder2 = EncoderReader(pin_a=23, pin_b=24)
+encoder1.start()
+encoder2.start()
+
 
 motor_driver = DualMotorDriver(motor1_pins=(12, 13), motor2_pins=(18, 20))
 
@@ -57,6 +65,11 @@ try:
         motor_driver.set_motor_speed("motor1", int(left_y * 100))  # Forward at 50% speed
         motor_driver.set_motor_speed("motor2", int(right_y * 100)) # Reverse at 50% speed
 
+        count_a, count_b = encoder1.get_counts()
+        print(f"Pulse Count A: {count_a}, Pulse Count B: {count_b}")
+        count_a, count_b = encoder2.get_counts()
+        print(f"Pulse Count A: {count_a}, Pulse Count B: {count_b}")
+
         pygame.time.wait(100)  # Delay to avoid excessive CPU usage
 
 except KeyboardInterrupt:
@@ -65,3 +78,7 @@ except KeyboardInterrupt:
 finally:
     pygame.joystick.quit()
     pygame.quit()
+    encoder1.stop()
+    encoder2.stop()
+    motor_driver.cleanup()
+
