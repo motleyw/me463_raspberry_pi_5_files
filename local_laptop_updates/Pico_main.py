@@ -20,6 +20,10 @@ ULTS5 = uc.ULTSensor(trigger_pin=31, echo_pin=32) #Update pin numbers
 ULTS6 = uc.ULTSensor(trigger_pin=33, echo_pin=34) #Update pin numbers
 ULTS7 = uc.ULTSensor(trigger_pin=35, echo_pin=36) #Update pin numbers
 
+#array of speed adjustments with 7 ultrasonic sensors
+# speed_adjustment1 is left most, speed_adjustment7 is right most
+speed_adjustment1 = [1, 1, 1, 1, 1, 1, 1]
+dist = [0, 0, 0, 0, 0, 0, 0]
 speed_adjustment = 1
 stop = False
 
@@ -27,34 +31,37 @@ while True:
     if (stop):
         break
     else:
+        speed_adjustment = 1
         # Read the ultrasonic sensors
-        dist1 = ULTS1.measure_distance()
-        dist2 = ULTS2.measure_distance()
-        dist3 = ULTS3.measure_distance()
-        dist4 = ULTS4.measure_distance()
-        dist5 = ULTS5.measure_distance()
-        dist6 = ULTS6.measure_distance()
-        dist7 = ULTS7.measure_distance()
+        dist[1] = ULTS1.measure_distance()
+        dist[2] = ULTS2.measure_distance()
+        dist[3] = ULTS3.measure_distance()
+        dist[4] = ULTS4.measure_distance()
+        dist[5] = ULTS5.measure_distance()
+        dist[6] = ULTS6.measure_distance()
+        dist[7] = ULTS7.measure_distance()
 
         # Outer sensors (1&7) adjust speed adjustment proportionally between 36 and 20cm
         # Middle sensors (2&6) adjust speed adjustment proportionally between 33 and 20cm
         # Inner sensors (3&4&5) adjust speed adjustment proportionally between 30 and 20cm
-        if (dist1 < 36):
-            speed_adjustment = (dist1 - 20) / (36 - 20)
-        if (dist2 < 33):
-            speed_adjustment = (dist2 - 20) / (33 - 20)
-        if (dist3 < 30):
-            speed_adjustment = (dist3 - 20) / (30 - 20)
-        if (dist4 < 30):
-            speed_adjustment = (dist4 - 20) / (30 - 20)
-        if (dist5 < 30):
-            speed_adjustment = (dist5 - 20) / (30 - 20)
-        if (dist6 < 33):
-            speed_adjustment = (dist6 - 20) / (33 - 20)
-        if (dist7 < 36):
-            speed_adjustment = (dist7 - 20) / (36 - 20)
-        if (dist1 < 20 or dist2 < 20 or dist3 < 20 or dist4 < 20 or dist5 < 20 or dist6 < 20 or dist7 < 20):
-            speed_adjustment = 0
+        if (dist[1] < 36):
+            speed_adjustment[1] = (dist[1] - 20) / (36 - 20)
+        if (dist[2] < 33):
+            speed_adjustment[2] = (dist[2] - 20) / (33 - 20)
+        if (dist[3] < 30):
+            speed_adjustment[3] = (dist[3] - 20) / (30 - 20)
+        if (dist[4] < 30):
+            speed_adjustment[4] = (dist[4] - 20) / (30 - 20)
+        if (dist[5] < 30):
+            speed_adjustment[5] = (dist[5] - 20) / (30 - 20)
+        if (dist[6] < 33):
+            speed_adjustment[6] = (dist[6] - 20) / (33 - 20)
+        if (dist[7] < 36):
+            speed_adjustment[7] = (dist[7] - 20) / (36 - 20)
+
+        for i in range(1, 8):
+            if (speed_adjustment[i] < speed_adjustment):
+                speed_adjustment = speed_adjustment[i]
 
         # If any sensor is greater than its threshold, set speed adjustment to 1s
         # If any sensor is less than 20cm, set speed adjustment to 0s
@@ -62,6 +69,8 @@ while True:
             speed_adjustment = 0
         if (speed_adjustment > 1):
             speed_adjustment = 1
+        if (dist[1] < 20 or dist[2] < 20 or dist[3] < 20 or dist[4] < 20 or dist[5] < 20 or dist[6] < 20 or dist[7] < 20):
+            speed_adjustment = 0
 
         # Send the speed adjustment to the RPi 5 through I2C
 
