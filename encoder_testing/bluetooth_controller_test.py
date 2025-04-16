@@ -66,9 +66,11 @@ try:
         motor_driver.set_motor_speed("motor2", int(right_y * 100)) # Reverse at 50% speed
 
         count_a, count_b = encoder1.get_counts()
-        print(f"Pulse Count A: {count_a}, Pulse Count B: {count_b}")
+        #print(f"Pulse Count A: {count_a}, Pulse Count B: {count_b}")
         count_a, count_b = encoder2.get_counts()
-        print(f"Pulse Count A: {count_a}, Pulse Count B: {count_b}")
+        #print(f"Pulse Count A: {count_a}, Pulse Count B: {count_b}")
+        print(encoder1.speed())
+        print(f"{count_a}, {count_b}")
 
         pygame.time.wait(100)  # Delay to avoid excessive CPU usage
 
