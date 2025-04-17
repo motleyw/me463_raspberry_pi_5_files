@@ -3,14 +3,16 @@
 # The coefficients are in the order: [Proportional (Kp), Integral(Ki), Derivative(Kd)]
 
 class Controller:
-    def __init__(self, coefficients, type="PID"):
+    def __init__(self, coefficients, c_type="PID", min=0):
         self.coefficients = coefficients
         self.previous_error = 0.0
         self.sum_error = 0.0
+        self.type = c_type
+        self.min = min
 
 
     def calculate_pwm(self, error, dt):
-        if (type == "PID"):
+        if (self.type == "PID"):
             PWM = 0
 
             # Calculate Proportional Gain
@@ -34,19 +36,39 @@ class Controller:
                 PWM = 0
 
             return PWM
-        elif (type == "FF"):
+        elif (self.type == "FF_1"):
             # Calculate Feed Forward Gain
-            FF = self.coefficients[0] * error
+            intercept = self.coefficients[0]
+            slope = self.coefficients[1]
+            FF = intercept + slope * error
 
             #Scaling here! Might need adjustments!!!
             if FF > 100:
                 FF = 100
-            elif FF < 0:
+            elif FF < self.min:
+                FF = 0
+
+            return FF
+        elif (self.type == "FF_2"):
+            # Calculate Feed Forward Gain
+            if(error > 0 and error < 12):
+                intercept = self.coefficients[0]
+                slope = self.coefficients[1]
+                FF = intercept + slope * error
+            elif(error >= 12 and error < 15):
+                intercept = self.coefficients[2]
+                slope = self.coefficients[3]
+                FF = intercept + slope * error
+
+            #Scaling here! Might need adjustments!!!
+            if FF > 100:
+                FF = 100
+            elif FF < self.min:
                 FF = 0
 
             return FF
         else:
-            raise ValueError("Invalid controller type. Use 'PID' or 'FF'.")
+            raise ValueError("Invalid controller type. Use 'PID' or 'FF_1 or 'FF_2'.")
     
 
     
