@@ -1,6 +1,9 @@
 import RPi.GPIO as GPIO
 import time
 
+# TEST PARAMETERS
+PWM = 100  # Duty cycle percentage
+
 # Set up GPIO mode
 GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
 GPIO.setup(17, GPIO.OUT)  # Set GPIO pin 17 as an output
@@ -14,7 +17,7 @@ pwm.start(0)
 try:
     while True:
         # Increase duty cycle from 0 to 100%
-        pwm.ChangeDutyCycle(100)
+        pwm.ChangeDutyCycle(PWM)
 
 except KeyboardInterrupt:
     # Stop PWM on interrupt (Ctrl+C)
