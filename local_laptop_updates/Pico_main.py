@@ -21,12 +21,18 @@ ULTS5 = uc.ULTSensor(trigger_pin=31, echo_pin=32) #Update pin numbers
 ULTS6 = uc.ULTSensor(trigger_pin=33, echo_pin=34) #Update pin numbers
 ULTS7 = uc.ULTSensor(trigger_pin=35, echo_pin=36) #Update pin numbers
 
+# Instantiate the ultrasonic for fill level detection
+ULTS8 = uc.ULTSensor(trigger_pin=37, echo_pin=38) #Update pin numbers
+
 #array of speed adjustments with 7 ultrasonic sensors
 # speed_adjustment1 is left most, speed_adjustment7 is right most
 speed_adjustment1 = [1, 1, 1, 1, 1, 1, 1]
 dist = [0, 0, 0, 0, 0, 0, 0]
 speed_adjustment = 1
 stop = False
+Low = 12
+Medium = 6
+fill_level = "High"
 
 while True:
     if (stop):
@@ -73,5 +79,16 @@ while True:
         if (dist[0] < 20 or dist[1] < 20 or dist[2] < 20 or dist[3] < 20 or dist[4] < 20 or dist[5] < 20 or dist[6] < 20):
             speed_adjustment = 0
 
-        # Send the speed adjustment to the RPi 5 through I2C
+
+        # Read the fill level sensor
+        granulate_height = ULTS8.measure_distance()
+        # If the fill level is more than 12cm, set speed adjustment to Low
+        if (granulate_height > Low):
+            fill_level = "Low"        
+        elif (granulate_height > Medium and granulate_height <= Low):
+            fill_level = "Medium"
+        else:
+            fill_level = "High"
+
+        # Send the speed adjustment and the fill level to the RPi 5 through I2C
 

@@ -28,7 +28,7 @@ class Motor:
         # Calculate PWM from PID controller. Encoder feedback is used to adjust the PWM signal.
         self.speed = encoder.get_speed() #need to add encoder paramaters here
         error = set_speed - self.speed
-        self.PWM = Controller.calculate_pwm(error) #need to add controller paramaters here
+        self.PWM = Controller.calculate_pwm(error, 0.001) #need to add controller paramaters here
 
         return self.PWM
     
