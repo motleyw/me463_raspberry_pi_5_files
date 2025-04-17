@@ -2,18 +2,19 @@ import RPi.GPIO as GPIO
 import time
 
 from controller_class import Controller
+from encoder_class import Encoder
 
 class Motor:
-    def __init__(self, pins, set_speed=0, controller=None, encoder=None, pwm_frequency=1000):
+    def __init__(self, pins, set_speed=0, coefficients=[], encoder=None, pwm_frequency=1000):
         # Self Variable Declarations and Assignments
         self.set_speed = set_speed
         self.speed = 0
         self.PWM = 0
         self.pwm_frequency = pwm_frequency
-        self.controller = Controller(coefficients=[1, 0, 0])
+        self.controller = Controller(coefficients)
         self.encoder = encoder
+        self.encoder.start()
         self.pins = {}
-        #self.pins = {pin_name: pin_number for pin_name, pin_number in pins} is this what you want?
 
         # Pin Setup
         for pin_name, pin_number in pins:
@@ -23,13 +24,12 @@ class Motor:
         # Start PWM Pins
         for pin_name in self.pins:
             self.pins[pin_name].start(0)
-
+    
     def calc_PWM(self, set_speed, encoder=None, controller=None):
         # Calculate PWM from PID controller. Encoder feedback is used to adjust the PWM signal.
-        self.speed = encoder.get_speed() #need to add encoder paramaters here
+        self.speed = Encoder.speed() #rad/s
         error = set_speed - self.speed
-        self.PWM = Controller.calculate_pwm(error, 0.001) #need to add controller paramaters here
-
+        self.PWM = Controller.calculate_pwm(error, 0.001) #dt = 1ms
         return self.PWM
     
     def set_motor_speed(self):
