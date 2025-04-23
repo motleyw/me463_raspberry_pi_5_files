@@ -5,8 +5,8 @@
 ##########################################################################################
 
 import time
-import threading
 import RPi.GPIO as GPIO
+from i2c_slave import I2CSlave
 
 import motor_class as mc
 import ultrasonic_class as uc
@@ -24,7 +24,7 @@ ULTS7 = uc.ULTSensor(trigger_pin=35, echo_pin=36) #Update pin numbers
 # Instantiate the ultrasonic for fill level detection
 ULTS8 = uc.ULTSensor(trigger_pin=37, echo_pin=38) #Update pin numbers
 
-#array of speed adjustments with 7 ultrasonic sensors
+# array of speed adjustments with 7 ultrasonic sensors
 # speed_adjustment1 is left most, speed_adjustment7 is right most
 speed_adjustment1 = [1, 1, 1, 1, 1, 1, 1]
 dist = [0, 0, 0, 0, 0, 0, 0]
@@ -32,7 +32,10 @@ speed_adjustment = 1
 stop = False
 Low = 12
 Medium = 6
-fill_level = "High"
+fill_level = 0x03  # High
+
+# I2C object
+i2c = I2CSlave(sda=16, scl=17, addr=0x42)
 
 while True:
     if (stop):
@@ -84,11 +87,16 @@ while True:
         granulate_height = ULTS8.measure_distance()
         # If the fill level is more than 12cm, set speed adjustment to Low
         if (granulate_height > Low):
-            fill_level = "Low"        
+            fill_level = 0x01  # Low        
         elif (granulate_height > Medium and granulate_height <= Low):
-            fill_level = "Medium"
+            fill_level = 0x02  # Medium
         else:
-            fill_level = "High"
-
+            fill_level = 0x03  # High
+        
+        
         # Send the speed adjustment and the fill level to the RPi 5 through I2C
+        speed_adjustment_b = int(speed_adjustment * 63)  # Between 0x00 and 0x3f
 
+        bit_package = (speed_adjustment_b << 2) | fill_level
+        i2c.write(bit_package)
+        time.sleep(0.5)
