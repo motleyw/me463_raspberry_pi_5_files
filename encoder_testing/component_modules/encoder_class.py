@@ -3,12 +3,12 @@ import threading
 import time
 
 class Encoder:
-    def __init__(self, pin_a, pin_b, debounce_s=0.02, rads_per_count=0.06, update_interval=0.005):
+    def __init__(self, pin_a, pin_b, debounce_s=0.01, rads_per_count=0.06, velocity_interval=0.1):
         self.pin_a = pin_a
         self.pin_b = pin_b
         self.debounce_s = debounce_s  # sec
         self.rads_per_count = rads_per_count
-        self.update_interval = update_interval
+        self.velocity_interval = velocity_interval
 
         self.count_a = 0
         self.count_b = 0
@@ -40,7 +40,7 @@ class Encoder:
                 if GPIO.input(self.pin_b) == GPIO.HIGH:
                     self.direction = 1
                 else:
-                    self.direciton = -1
+                    self.direction = -1
 
     def _callback_b(self, channel):
         now = time.time()
@@ -52,17 +52,20 @@ class Encoder:
                 if GPIO.input(self.pin_a) == GPIO.HIGH:
                     self.direction = -1
                 else:
-                    self.direciton = 1
+                    self.direction = 1
 
     def _speed_updater(self):
         while not self.stop_event.is_set():
             with self.lock:
-                dc_a = self.count_a - self.last_count_a
-                dc_b = self.count_b - self.last_count_b
-                self.angular_velocity = self.direction * self.rads_per_count * ((dc_a / self.update_interval + dc_b / self.update_interval) / 2)
-                self.last_count_a = self.count_a
-                self.last_count_b = self.count_b
-            time.sleep(self.update_interval)
+                count_a_init = self.count_a
+                count_b_init = self.count_b
+            time.sleep(self.velocity_interval)
+            d_a = self.count_a - count_a_init
+            d_b = self.count_b - count_b_init
+            with self.lock:
+                d_a = self.count_a - count_a_init
+                d_b = self.count_b - count_b_init
+                self.angular_velocity = self.direction * self.rads_per_count * (d_a + d_b) / 2
 
     def start(self):
         if not self.running:
@@ -77,7 +80,9 @@ class Encoder:
         if self.running:
             GPIO.remove_event_detect(self.pin_a)
             GPIO.remove_event_detect(self.pin_b)
+            self.stop_event.set()
             self.running = False
+            GPIO.cleanup((self.pin_a, self.pin_b))
 
     def get_counts(self):
         with self.lock:
