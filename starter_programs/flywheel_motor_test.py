@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # TEST PARAMETERS
-PWM = 100  # Duty cycle percentage
+PWM = 55  # Duty cycle percentage
 
 # Set up GPIO mode
 GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
