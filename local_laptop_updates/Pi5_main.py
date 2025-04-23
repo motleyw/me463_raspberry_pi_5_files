@@ -12,6 +12,7 @@ import threading
 from motor_class import Motor
 from imu_class import IMU
 from lcd_class import LCD
+from bluetooth_controller_mode import btc_mode
 # from gps_class import GPS
 # from lcd_class import LCD
 
@@ -80,7 +81,7 @@ def handle_menu_case(index):
                 print("Running BTC mode...")
                 lcd.write("BTC Mode", 1, 1)
                 lcd.write("Running...", 2, 1)
-                #do BTC mode tasks here
+                btc_mode()  # Call the BTC mode function
         case "Mapping":
             if idle_toggle:
                 lcd.write("Mapping Mode", 1, 1)
