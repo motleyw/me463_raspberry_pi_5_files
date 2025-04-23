@@ -14,7 +14,7 @@ class Motor:
         self.type = c_type
         self.controller = Controller(coefficients, c_type, min)
         self.encoder = encoder
-        self.pins = {}
+        self.pins = {}  # Make sure 2nd pin is the backwards pin
 
         if ("type"=="PID"):
             self.encoder.start()
@@ -44,8 +44,11 @@ class Motor:
     
     def set_motor_speed(self):
         # Set the motor speed using PWM. The speed is set based on the calculated PWM value.
-        for pin_name in self.pins:
-            self.pins[pin_name].ChangeDutyCycle(self.PWM)
+        if self.PWM < 0:
+            self.pins["backward"].ChangeDutyCycle(self.PWM)
+        else:
+            self.pins["forward"].ChangeDutyCycle(self.PWM)
+
         return
     
     def stop_motor(self):

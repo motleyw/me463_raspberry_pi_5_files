@@ -99,32 +99,32 @@ def btc_mode():
                 right_speed = int(-left_y * 50)
                 turning_speed = int(left_x * 49) # If PWM is 100, motors stop
 
-                left_motor.set_speed(left_speed + turning_speed)
-                right_motor.set_speed(right_speed - turning_speed)
-                
-                #if the right trigger is pressed, set the drum motor speed
-                if controller.get_button(5):
-                    drum_motor.set_speed(int(right_y * 100))
-                else:
-                    drum_motor.set_speed(0)
-                
-                #if the left trigger is pressed, set the flywheel motor speed
-                if controller.get_button(4):
-                    flywheel_motor.set_speed(int(80)) # Set to 80% speed for flywheel
-                else:
-                    flywheel_motor.set_speed(0)
+            left_motor.set_speed(left_speed + turning_speed)
+            right_motor.set_speed(right_speed - turning_speed)
+            
+            #if the right trigger is pressed, set the drum motor speed
+            if controller.get_button(5):
+                drum_motor.set_speed(int(right_y * 100))
+            else:
+                drum_motor.set_speed(0)
+            
+            #if the left trigger is pressed, set the flywheel motor speed
+            if controller.get_button(4):
+                flywheel_motor.set_speed(int(80)) # Set to 80% speed for flywheel
+            else:
+                flywheel_motor.set_speed(0)
 
                 if controller.get_button(6):
                     stop_toggle = True
                     time.sleep(0.5)
                     print("E-stop activated. Press Back button to deactivate.")
 
-            elif stop_toggle == True:
-                # E-stop activated, stop all motors
-                left_motor.set_speed(0)
-                right_motor.set_speed(0)
-                drum_motor.set_speed(0)
-                flywheel_motor.set_speed(0)
+        elif stop_toggle == True:
+            # E-stop activated, stop all motors
+            left_motor.set_speed(0)
+            right_motor.set_speed(0)
+            drum_motor.set_speed(0)
+            flywheel_motor.set_speed(0)
 
                 if controller.get_button(6):
                     stop_toggle = False
