@@ -24,7 +24,7 @@ ULTS7 = uc.ULTSensor(trigger_pin=35, echo_pin=36) #Update pin numbers
 # Instantiate the ultrasonic for fill level detection
 ULTS8 = uc.ULTSensor(trigger_pin=37, echo_pin=38) #Update pin numbers
 
-#array of speed adjustments with 7 ultrasonic sensors
+# array of speed adjustments with 7 ultrasonic sensors
 # speed_adjustment1 is left most, speed_adjustment7 is right most
 speed_adjustment1 = [1, 1, 1, 1, 1, 1, 1]
 dist = [0, 0, 0, 0, 0, 0, 0]
@@ -32,7 +32,7 @@ speed_adjustment = 1
 stop = False
 Low = 12
 Medium = 6
-fill_level = "High"
+fill_level = 0x03  # High
 
 # I2C object
 i2c = I2CSlave(sda=16, scl=17, addr=0x42)
