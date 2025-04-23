@@ -6,7 +6,7 @@ import time
 import RPi.GPIO as GPIO
 
 # instantiate motor
-motor = Motor({"Pin":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=32)
+motor = Motor({"Pin":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=55)
 
 # Test the set_motor_speed method
 try:
