@@ -27,6 +27,7 @@ class Encoder:
         self.stop_event = threading.Event()
 
         GPIO.setmode(GPIO.BCM)
+
         GPIO.setup(self.pin_a, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.pin_b, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 

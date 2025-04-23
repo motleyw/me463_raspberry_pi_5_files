@@ -69,5 +69,4 @@ class Motor:
         # Cleanup the GPIO pins when done. This is important to avoid warnings and errors when re-running the code.
         for pin_name in self.pins:
             self.pins[pin_name].stop()
-        GPIO.cleanup()
         return
