@@ -5,17 +5,17 @@ import time
 # MOTOR LEFT pins: 12 backward, 13 forward
 # MOTOR RIGHT pins: 18, 20
 
-PWM = 40
-direction = "backward"
+PWM = 99
+direction = "forward"
 
 # Set up GPIO mode
 GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
-GPIO.setup(12, GPIO.OUT)  # Set GPIO pin 12 as an output
-GPIO.setup(13, GPIO.OUT)  # Set GPIO pin 13 as an output
+GPIO.setup(20, GPIO.OUT)  # Set GPIO pin 12 as an output
+GPIO.setup(18, GPIO.OUT)  # Set GPIO pin 13 as an output
 
 # Create a PWM instance on pin 17
-pwm_1 = GPIO.PWM(12, 1000)  # 1000 Hz frequency
-pwm_2 = GPIO.PWM(13, 1000)  # 1000 Hz frequency
+pwm_1 = GPIO.PWM(20, 1000)  # 1000 Hz frequency
+pwm_2 = GPIO.PWM(18, 1000)  # 1000 Hz frequency
 
 # Start PWM with a 0% duty cycle (off)
 pwm_1.start(0)
