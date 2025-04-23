@@ -31,6 +31,10 @@ class LCD:
             pos = 0x80  # Line 1
         elif line == 2:
             pos = 0xC0  # Line 2
+        elif line == 3:
+            pos = 0x94
+        elif line == 4:
+            pos = 0xD4
         else:
             raise ValueError("Line must be 1 or 2.")
 
