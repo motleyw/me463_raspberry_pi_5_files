@@ -25,8 +25,8 @@ right_encoder = Encoder(pin_a=23, pin_b=24)
 left_encoder.start()
 right_encoder.start()
 
-left_motor = Motor(pins={"forward": 12, "backward": 13}, set_speed=0, coefficients=[1.0, 0.0, 0.0], c_type="PID", encoder=left_encoder, pwm_frequency=1000)
-right_motor = Motor(pins={"forward": 18, "backward": 20}, set_speed=0, coefficients=[1.0, 0.0, 0.0], c_type="PID", encoder=right_encoder, pwm_frequency=1000)
+left_motor = Motor(pins={"forward": 12, "backward": 13}, set_speed=0, coefficients=[6.8235, 0.1836], c_type="FF_1", encoder=left_encoder, pwm_frequency=1000, min=20)
+right_motor = Motor(pins={"forward": 18, "backward": 20}, set_speed=0, coefficients=[6.8235, 0.1836], c_type="FF_1", encoder=right_encoder, pwm_frequency=1000, min=20)
 
 drum_motor = Motor({"Pin":19}, set_speed=0, coefficients=[-6.9932, 4.4445, -343.31, 32.46], c_type="FF_2", encoder=None, pwm_frequency=1000, min=20)
 flywheel_motor = Motor({"Pin":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=32)
