@@ -3,7 +3,7 @@ import threading
 import time
 
 class Encoder:
-    def __init__(self, pin_a, pin_b, debounce_s=0.02, rads_per_count=0.06, velocity_interval=0.005):
+    def __init__(self, pin_a, pin_b, debounce_s=0.01, rads_per_count=0.06, velocity_interval=0.1):
         self.pin_a = pin_a
         self.pin_b = pin_b
         self.debounce_s = debounce_s  # sec
@@ -80,6 +80,7 @@ class Encoder:
         if self.running:
             GPIO.remove_event_detect(self.pin_a)
             GPIO.remove_event_detect(self.pin_b)
+            self.stop_event.set()
             self.running = False
             GPIO.cleanup((self.pin_a, self.pin_b))
 
