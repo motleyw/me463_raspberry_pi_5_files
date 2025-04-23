@@ -9,7 +9,11 @@
 import RPi.GPIO as GPIO
 import time
 import threading
-
+from motor_class import Motor
+from imu_class import IMU
+from lcd_class import LCD
+# from gps_class import GPS
+# from lcd_class import LCD
 
 # Left Drive Motor Parameters
 motorL_Kp = 0.1
@@ -23,33 +27,22 @@ motorR_Ki = 0.01
 motorR_Kd = 0.01
 motorR_coef = [motorR_Kp, motorR_Ki, motorR_Kd]
 
-# Drum Motor Parameters
-motorD_Kp = 0.1
-motorD_Ki = 0.01
-motorD_Kd = 0.01
-motorD_coef = [motorD_Kp, motorD_Ki, motorD_Kd]
-
-# Flywheel Motor Parameters
-motorF_Kp = 0.1
-motorF_Ki = 0.01
-motorF_Kd = 0.01
-motorF_coef = [motorF_Kp, motorF_Ki, motorF_Kd]
-
-
-
-
 # Instatntiate the classes
 # create Rpi, HMI, motors, IMU, GPS, Pico, and other classes here
+lcd = LCD(i2c_address=0x27, bus_number=1)  # Example I2C address and bus number
+
+# Start all devices
+lcd.init_lcd()  # Initialize the LCD
 
 # Define GPIO pins for your buttons
-UP_BUTTON = 17       # GPIO pin for the "up" button
-DOWN_BUTTON = 27     # GPIO pin for the "down" button
-SELECT_BUTTON = 22   # GPIO pin for the "select" button
+UP_BUTTON = 7        # GPIO pin for the "up" button
+DOWN_BUTTON = 5      # GPIO pin for the "down" button
+SELECT_BUTTON = 1    # GPIO pin for the "select" button
 
 # Mode setup
-modes = ['Idle', 'BTC', 'Auto_Nav', 'Mode 4']
+modes = ['Idle', 'BTC', 'Mapping', 'Auto', 'Demo']
 current_mode_index = 0
-idle_state = True    # Keeps track of whether we're in the idle state or an active mode
+idle_toggle = True    # Keeps track of whether we're in the idle state or an active mode
 
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -60,64 +53,83 @@ def setup_gpio():
 def cleanup_gpio():
     GPIO.cleanup()
 
-def cycle_up():
-    global current_mode_index
-    current_mode_index = (current_mode_index - 1) % len(modes)
-    print(f"Selected: {modes[current_mode_index]}")
+def read_button():
+    # Check if the UP button is pressed
+    if GPIO.input(UP_BUTTON) == GPIO.LOW:
+        return 'u'
+    # Check if the DOWN button is pressed
+    elif GPIO.input(DOWN_BUTTON) == GPIO.LOW:
+        return 'd'
+    # Check if the SELECT button is pressed
+    elif GPIO.input(SELECT_BUTTON) == GPIO.LOW:
+        return 's'
+    return None
 
-def cycle_down():
-    global current_mode_index
-    current_mode_index = (current_mode_index + 1) % len(modes)
-    print(f"Selected: {modes[current_mode_index]}")
-
-def enter_mode():
-    global idle_state
-    idle_state = False
-    print(f"Entering {modes[current_mode_index]}...")
-    # Here, call the imported method for the selected mode.
-    if modes[current_mode_index] == 'Idle':
-        idle()  # Replace with idle function
-    elif modes[current_mode_index] == 'BTC':
-        BTC()   # Replace with BTC function
-    elif modes[current_mode_index] == 'Auto_Nav':
-        Auto_Nav()  # Replace with Auto_Nav function
-
-def exit_mode():
-    global idle_state
-    idle_state = True
-    print("Returning to idle state...")
-
-def mode_1_function():
-    while not GPIO.input(SELECT_BUTTON):  # Exit mode when the "select" button is pressed
-        print("Mode 1 is active...")
-        time.sleep(0.5)  # Simulate mode functionality
-    exit_mode()
+def handle_menu_case(index):
+    match modes[index]:
+        case "Idle":
+            if idle_toggle:
+                lcd.write("Idle Mode", 1, 1)
+            else:
+                print("Running Idle mode...")
+                lcd.write("Idle Mode", 1, 1)
+                lcd.write("Running...", 2, 1)
+                #do Idle mode tasks here
+        case "BTC":
+            if idle_toggle:
+                lcd.write("BTC Mode", 1, 1)
+            else:
+                print("Running BTC mode...")
+                lcd.write("BTC Mode", 1, 1)
+                lcd.write("Running...", 2, 1)
+                #do BTC mode tasks here
+        case "Mapping":
+            if idle_toggle:
+                lcd.write("Mapping Mode", 1, 1)
+            else:
+                print("Running Mapping mode...")
+                lcd.write("Mapping Mode", 1, 1)
+                lcd.write("Running...", 2, 1)
+                #do Mapping mode tasks here
+        case "Auto":
+            if idle_toggle:
+                lcd.write("Auto Mode", 1, 1)
+            else:
+                print("Running Auto mode...")
+                lcd.write("Auto Mode", 1, 1)
+                lcd.write("Running...", 2, 1)
+                #do Auto mode tasks here
+        case "Demo":
+            if idle_toggle:
+                lcd.write("Demo Mode", 1, 1)
+            else:
+                print("Running Demo mode...")
+                lcd.write("Demo Mode", 1, 1)
+                lcd.write("Running...", 2, 1)  
+                #do Demo mode tasks here
+        case _:
+            print("Invalid menu selection.")
 
 def main():
-    setup_gpio()
-    global idle_state
-    try:
-        while True:
-            if idle_state:
-                if not GPIO.input(UP_BUTTON):  # Detect "up" button press
-                    cycle_up()
-                    time.sleep(0.2)  # Debounce delay
-                elif not GPIO.input(DOWN_BUTTON):  # Detect "down" button press
-                    cycle_down()
-                    time.sleep(0.2)  # Debounce delay
-                elif not GPIO.input(SELECT_BUTTON):  # Detect "select" button press
-                    enter_mode()
-                    time.sleep(0.2)  # Debounce delay
-            else:
-                # Exit mode logic is handled in individual mode functions
-                pass
+    global current_menu_index
+    print("Starting menu navigation...\n")
 
-    except KeyboardInterrupt:
-        print("Exiting program...")
-    finally:
-        cleanup_gpio()
+    while True:
+        print(f"\nCurrent Menu: {modes[current_menu_index]}")
+        handle_menu_case(current_menu_index)
+
+        button = read_button()
+
+        if button == "u":
+            current_menu_index = (current_menu_index + 1) % len(modes)
+        elif button == "d":
+            current_menu_index = (current_menu_index - 1) % len(modes)
+        elif button == "s":
+            print(f"Selected: {modes[current_menu_index]}")
+            idle_toggle = not idle_toggle  # Toggle the idle state
+            
+        # Optional: add small delay for readability/debouncing
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()
-
-
