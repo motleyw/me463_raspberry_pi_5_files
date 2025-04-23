@@ -30,13 +30,15 @@ motorR_coef = [motorR_Kp, motorR_Ki, motorR_Kd]
 
 # Instatntiate the classes
 # create Rpi, HMI, motors, IMU, GPS, Pico, and other classes here
-lcd = LCD(i2c_address=0x27, bus_number=1)  # Example I2C address and bus number
+lcd = LCD(i2c_address=0x27, bus_number=2)  # Example I2C address and bus number
 
 
 # Define GPIO pins for your buttons
 UP_BUTTON = 7        # GPIO pin for the "up" button
 DOWN_BUTTON = 5      # GPIO pin for the "down" button
 SELECT_BUTTON = 1    # GPIO pin for the "select" button
+
+LIMIT_SWITCH = 27  # GPIO pin for the limit switch
 
 # Mode setup
 modes = ['Idle', 'BTC', 'Mapping', 'Auto', 'Demo']
@@ -45,9 +47,10 @@ idle_toggle = True    # Keeps track of whether we're in the idle state or an act
 
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(UP_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(DOWN_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(SELECT_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(UP_BUTTON, GPIO.IN)
+    GPIO.setup(DOWN_BUTTON, GPIO.IN)
+    GPIO.setup(SELECT_BUTTON, GPIO.IN)
+
 
 def cleanup_gpio():
     GPIO.cleanup()

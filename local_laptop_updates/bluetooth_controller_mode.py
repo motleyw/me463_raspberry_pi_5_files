@@ -35,7 +35,8 @@ def btc_mode():
     flywheel_motor = Motor({"Pin":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=32)
 
     SELECT_BUTTON = 1    # GPIO pin for the "select" button
-    GPIO.setup(SELECT_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(SELECT_BUTTON, GPIO.IN)
 
     # Initialize pygame's joystick module
     pygame.init()
