@@ -28,9 +28,9 @@ class LCD:
     def write(self, string, line, side):
         # Define the starting position based on line and side
         if line == 1:
-            pos = 0x80  # Line 1
+            pos = 0x80
         elif line == 2:
-            pos = 0xC0  # Line 2
+            pos = 0xC0
         else:
             raise ValueError("Line must be 1 or 2.")
 

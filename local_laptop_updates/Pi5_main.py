@@ -31,8 +31,6 @@ motorR_coef = [motorR_Kp, motorR_Ki, motorR_Kd]
 # create Rpi, HMI, motors, IMU, GPS, Pico, and other classes here
 lcd = LCD(i2c_address=0x27, bus_number=1)  # Example I2C address and bus number
 
-# Start all devices
-lcd.init_lcd()  # Initialize the LCD
 
 # Define GPIO pins for your buttons
 UP_BUTTON = 7        # GPIO pin for the "up" button
