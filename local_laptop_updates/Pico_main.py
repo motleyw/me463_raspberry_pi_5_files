@@ -95,8 +95,8 @@ while True:
         
         
         # Send the speed adjustment and the fill level to the RPi 5 through I2C
-        speed_adjustment_b = int(speed_adjustment * 63)  # Between 0x00 and 0x3f
+        speed_adjustment_b = max(0, min(63, int(speed_adjustment * 63)))  # Between 0x00 and 0x3f
 
         bit_package = (speed_adjustment_b << 2) | fill_level
-        i2c.write(bit_package)
+        i2c.write(bytes([bit_package]))
         time.sleep(0.5)
