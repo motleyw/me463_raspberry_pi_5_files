@@ -1,12 +1,13 @@
-import serial
+import RPi.GPIO as GPIO
+import time
 
-ser = serial.Serial("/dev/ttyAMA3", 115200, timeout=1)
+GPIO.setmode(GPIO.BCM)
+SPEED_ADJUSTMENT = 9
+FILL_LEVEL = 8
+GPIO.setup(SPEED_ADJUSTMENT, GPIO.IN)
+GPIO.setup(FILL_LEVEL, GPIO.IN)
 
 while True:
-    data = ser.read(1)
-    print(data)
-    if data:
-        byte_val = int.from_bytes(data, "big")
-        speed_val = (byte_val >> 2) & 0x3F
-        fill_level = byte_val & 0x03
-        print(f"Speed adj: {speed_val}/63, Fill level: {fill_level}")
+    print(GPIO.input(SPEED_ADJUSTMENT) == GPIO.HIGH)
+    print(GPIO.input(FILL_LEVEL) == GPIO.HIGH)
+    time.sleep(1)
