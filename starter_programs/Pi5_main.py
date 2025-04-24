@@ -16,9 +16,6 @@ from bluetooth_controller_mode import btc_mode
 # from gps_class import GPS
 # from lcd_class import LCD
 
-# Delay time for pi startup
-time.sleep(10)
-
 # Left Drive Motor Parameters
 motorL_Kp = 0.1
 motorL_Ki = 0.01
@@ -50,9 +47,11 @@ idle_toggle = True    # Keeps track of whether we're in the idle state or an act
 
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(UP_BUTTON, GPIO.IN)
-    GPIO.setup(DOWN_BUTTON, GPIO.IN)
-    GPIO.setup(SELECT_BUTTON, GPIO.IN)
+    GPIO.setup(DOWN_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(UP_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(SELECT_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
 
 
 def cleanup_gpio():
@@ -131,24 +130,25 @@ def main():
     global idle_toggle
     print("Starting menu navigation...\n")
     setup_gpio()
+    try:
+        while True:
+            print(f"\nCurrent Menu: {modes[current_mode_index]}")
+            handle_menu_case(current_mode_index)
 
-    while True:
-        print(f"\nCurrent Menu: {modes[current_mode_index]}")
-        handle_menu_case(current_mode_index)
+            button = read_button()
 
-        button = read_button()
-
-        if button == "u":
-            current_mode_index = (current_mode_index + 1) % len(modes)
-        elif button == "d":
-            current_mode_index = (current_mode_index - 1) % len(modes)
-        elif button == "s":
-            print(f"Selected: {modes[current_mode_index]}")
-            idle_toggle = not idle_toggle  # Toggle the idle state
-            
-        # Optional: add small delay for readability/debouncing
-        time.sleep(0.1)
+            if button == "u":
+                current_mode_index = (current_mode_index + 1) % len(modes)
+            elif button == "d":
+                current_mode_index = (current_mode_index - 1) % len(modes)
+            elif button == "s":
+                print(f"Selected: {modes[current_mode_index]}")
+                idle_toggle = not idle_toggle  # Toggle the idle state
+                
+            # Optional: add small delay for readability/debouncing
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        cleanup_gpio()
 
 if __name__ == "__main__":
     main()
-    GPIO.cleanup()

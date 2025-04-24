@@ -34,9 +34,15 @@ def btc_mode():
 
     SELECT_BUTTON = 5    # GPIO pin for the "select" button
     LIMIT_SWITCH = 27
+    LED_LEFT = 6
+    LED_RIGHT = 16
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(SELECT_BUTTON, GPIO.IN)
     GPIO.setup(LIMIT_SWITCH, GPIO.IN)
+    GPIO.setup(LED_LEFT, GPIO.OUT)
+    GPIO.setup(LED_RIGHT, GPIO.OUT)
+    GPIO.output(LED_LEFT, GPIO.HIGH)
+    GPIO.output(LED_RIGHT, GPIO.HIGH)
 
     # Initialize pygame's joystick module
     pygame.init()
@@ -155,7 +161,7 @@ def btc_mode():
                 toggle = True
                 print("Exiting BTC mode...")
                 time.sleep(0.2)
-
+            print(GPIO.input(SELECT_BUTTON) == GPIO.LOW)
             pygame.time.wait(100)  # Delay to avoid excessive CPU usage
 
     except KeyboardInterrupt:
@@ -174,3 +180,6 @@ def btc_mode():
         right_motor.cleanup()
         drum_motor.cleanup()
         flywheel_motor.cleanup()
+
+if __name__ == "__main__":
+    btc_mode()
