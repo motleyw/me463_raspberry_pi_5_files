@@ -16,6 +16,9 @@ from bluetooth_controller_mode import btc_mode
 # from gps_class import GPS
 # from lcd_class import LCD
 
+# Delay time for pi startup
+time.sleep(10)
+
 # Left Drive Motor Parameters
 motorL_Kp = 0.1
 motorL_Ki = 0.01

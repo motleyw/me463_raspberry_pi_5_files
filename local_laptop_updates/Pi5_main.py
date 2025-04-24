@@ -35,8 +35,8 @@ lcd = LCD(i2c_address=0x27, bus_number=2)  # Example I2C address and bus number
 
 # Define GPIO pins for your buttons
 UP_BUTTON = 7        # GPIO pin for the "up" button
-DOWN_BUTTON = 5      # GPIO pin for the "down" button
-SELECT_BUTTON = 1    # GPIO pin for the "select" button
+DOWN_BUTTON = 1      # GPIO pin for the "down" button
+SELECT_BUTTON = 5    # GPIO pin for the "select" button
 
 LIMIT_SWITCH = 27  # GPIO pin for the limit switch
 
@@ -113,21 +113,23 @@ def handle_menu_case(index):
             print("Invalid menu selection.")
 
 def main():
-    global current_menu_index
+    global current_mode_index
+    global idle_toggle
     print("Starting menu navigation...\n")
+    setup_gpio()
 
     while True:
-        print(f"\nCurrent Menu: {modes[current_menu_index]}")
-        handle_menu_case(current_menu_index)
+        print(f"\nCurrent Menu: {modes[current_mode_index]}")
+        handle_menu_case(current_mode_index)
 
         button = read_button()
 
         if button == "u":
-            current_menu_index = (current_menu_index + 1) % len(modes)
+            current_mode_index = (current_mode_index + 1) % len(modes)
         elif button == "d":
-            current_menu_index = (current_menu_index - 1) % len(modes)
+            current_mode_index = (current_mode_index - 1) % len(modes)
         elif button == "s":
-            print(f"Selected: {modes[current_menu_index]}")
+            print(f"Selected: {modes[current_mode_index]}")
             idle_toggle = not idle_toggle  # Toggle the idle state
             
         # Optional: add small delay for readability/debouncing

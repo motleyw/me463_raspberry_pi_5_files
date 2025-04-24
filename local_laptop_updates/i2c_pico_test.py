@@ -1,13 +1,12 @@
-from smbus2 import SMBus
+import serial
 
-PICO_I2C_ADDR = 0x42
+ser = serial.Serial("/dev/ttyAMA3", 115200, timeout=1)
 
-with SMBus(1) as bus:
-    while True:
-        try:
-            data = bus.read_byte(PICO_I2C_ADDR)
-            fill_level = data & 0x03
-            speed_correction = (data >> 2) / 63.0
-            print(f"Speed Correction: {speed_correction}; Fill Level: {fill_level}")
-        except Exception as e:
-            print("I2C Read Error:", e)
+while True:
+    data = ser.read(1)
+    print(data)
+    if data:
+        byte_val = int.from_bytes(data, "big")
+        speed_val = (byte_val >> 2) & 0x3F
+        fill_level = byte_val & 0x03
+        print(f"Speed adj: {speed_val}/63, Fill level: {fill_level}")

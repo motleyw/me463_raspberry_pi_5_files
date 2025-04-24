@@ -19,8 +19,6 @@ from encoder_class import Encoder
 from motor_class import Motor
 from controller_class import Controller
 
-
-
 def btc_mode():
     # Start encoder monitoring
     left_encoder = Encoder(pin_a=21, pin_b=22)
@@ -28,13 +26,13 @@ def btc_mode():
     left_encoder.start()
     right_encoder.start()
 
-    left_motor = Motor(pins={"forward": 12, "backward": 13}, set_speed=0, coefficients=[6.8235, 0.1836], c_type="FF_1", encoder=left_encoder, pwm_frequency=1000, min=20)
+    left_motor = Motor(pins={"forward": 13, "backward": 12}, set_speed=0, coefficients=[6.8235, 0.1836], c_type="FF_1", encoder=left_encoder, pwm_frequency=1000, min=20)
     right_motor = Motor(pins={"forward": 18, "backward": 20}, set_speed=0, coefficients=[6.8235, 0.1836], c_type="FF_1", encoder=right_encoder, pwm_frequency=1000, min=20)
 
-    drum_motor = Motor({"Pin":19}, set_speed=0, coefficients=[-6.9932, 4.4445, -343.31, 32.46], c_type="FF_2", encoder=None, pwm_frequency=1000, min=20)
-    flywheel_motor = Motor({"Pin":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=32)
+    drum_motor = Motor({"forward":19}, set_speed=0, coefficients=[-6.9932, 4.4445, -343.31, 32.46], c_type="FF_2", encoder=None, pwm_frequency=1000, min=20)
+    flywheel_motor = Motor({"forward":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=32)
 
-    SELECT_BUTTON = 1    # GPIO pin for the "select" button
+    SELECT_BUTTON = 5    # GPIO pin for the "select" button
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(SELECT_BUTTON, GPIO.IN)
 
@@ -71,8 +69,8 @@ def btc_mode():
 
     # Main event loop
     try:
+        stop_toggle = False
         while not toggle:
-            stop_toggle = False
             pygame.event.pump()  # Process events
 
             # Check for button presses
@@ -82,9 +80,9 @@ def btc_mode():
 
             # Check for joystick movement
             left_x = controller.get_axis(0)
-            left_y = controller.get_axis(1)
+            left_y = -controller.get_axis(1)
             right_x = controller.get_axis(2)
-            right_y = controller.get_axis(3)
+            right_y = -controller.get_axis(3)
 
             if abs(left_x) > 0.1 or abs(left_y) > 0.1:
                 print(f"Left Joystick: X={left_x:.2f}, Y={left_y:.2f}")
@@ -95,40 +93,59 @@ def btc_mode():
             if stop_toggle == False:  # E-stop not activated
 
                 # Set motor speeds based on joystick input
-                left_speed = int(left_y * 50)
-                right_speed = int(-left_y * 50)
-                turning_speed = int(left_x * 49) # If PWM is 100, motors stop
+                left_speed = int(left_y * 25)
+                right_speed = int(left_y * 25)
+                turning_speed = int(left_x * 25) # If PWM is 100, motors stop
 
-            left_motor.set_speed(left_speed + turning_speed)
-            right_motor.set_speed(right_speed - turning_speed)
-            
-            #if the right trigger is pressed, set the drum motor speed
-            if controller.get_button(5):
-                drum_motor.set_speed(int(right_y * 100))
-            else:
-                drum_motor.set_speed(0)
-            
-            #if the left trigger is pressed, set the flywheel motor speed
-            if controller.get_button(4):
-                flywheel_motor.set_speed(int(80)) # Set to 80% speed for flywheel
-            else:
-                flywheel_motor.set_speed(0)
+                stimput = ((left_y)**2 + (left_x)**2)**(1/2)
+                print(stimput)
+                if stimput > 0.5:
+                    left_motor.PWM = (left_speed + turning_speed)
+                    right_motor.PWM = (right_speed - turning_speed)
+                else:
+                    print(stimput)
+                    left_motor.PWM = 0
+                    right_motor.PWM = 0
+                    left_motor.stop_motor()
+                    right_motor.stop_motor()
+                print(f"Left PWM: {left_motor.PWM}, Right PWM: {right_motor.PWM}")
 
-                if controller.get_button(6):
+                left_motor.set_motor_speed()
+                right_motor.set_motor_speed()
+                
+                #if the right trigger is pressed, set the drum motor speed
+                if controller.get_button(5):
+                    drum_motor.PWM = int(right_y * 50 + 50)
+                    drum_motor.set_motor_speed()
+                else:
+                    drum_motor.PWM = 0
+                    drum_motor.set_motor_speed()
+                
+                #if the left trigger is pressed, set the flywheel motor speed
+                if controller.get_button(4):
+                    flywheel_motor.PWM = int(80)
+                    flywheel_motor.set_motor_speed() # Set to 80% speed for flywheel
+                else:
+                    flywheel_motor.PWM = 0
+                    flywheel_motor.set_motor_speed()
+
+                if controller.get_button(3):
                     stop_toggle = True
-                    time.sleep(0.5)
-                    print("E-stop activated. Press Back button to deactivate.")
+                    time.sleep(0.1)
+                    print("E-stop activated. Press Y button to deactivate.")
 
-        elif stop_toggle == True:
-            # E-stop activated, stop all motors
-            left_motor.set_speed(0)
-            right_motor.set_speed(0)
-            drum_motor.set_speed(0)
-            flywheel_motor.set_speed(0)
+            elif stop_toggle == True:
+                # E-stop activated, stop all motors
+                left_motor.stop_motor()
+                right_motor.stop_motor()
+                drum_motor.PWM = 0
+                drum_motor.set_motor_speed()
+                flywheel_motor.PWM = 0
+                flywheel_motor.set_motor_speed()
 
-                if controller.get_button(6):
+                if controller.get_button(3):
                     stop_toggle = False
-                    time.sleep(0.5)
+                    time.sleep(0.1)
                     print("E-stop deactivated.")
 
             if GPIO.input(SELECT_BUTTON) == GPIO.LOW:

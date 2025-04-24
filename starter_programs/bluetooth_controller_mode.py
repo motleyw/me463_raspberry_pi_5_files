@@ -33,8 +33,10 @@ def btc_mode():
     flywheel_motor = Motor({"forward":17}, set_speed=0, coefficients=[3.8739, 0.1569], c_type="FF_1", encoder=None, pwm_frequency=1000, min=32)
 
     SELECT_BUTTON = 5    # GPIO pin for the "select" button
+    LIMIT_SWITCH = 27
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(SELECT_BUTTON, GPIO.IN)
+    GPIO.setup(LIMIT_SWITCH, GPIO.IN)
 
     # Initialize pygame's joystick module
     pygame.init()
@@ -90,7 +92,7 @@ def btc_mode():
             if abs(right_x) > 0.1 or abs(right_y) > 0.1:
                 print(f"Right Joystick: X={right_x:.2f}, Y={right_y:.2f}")
 
-            if stop_toggle == False:  # E-stop not activated
+            if (stop_toggle == False) & (GPIO.input(LIMIT_SWITCH) == GPIO.LOW):  # E-stop not activated
 
                 # Set motor speeds based on joystick input
                 left_speed = int(left_y * 25)
@@ -134,7 +136,7 @@ def btc_mode():
                     time.sleep(0.1)
                     print("E-stop activated. Press Y button to deactivate.")
 
-            elif stop_toggle == True:
+            elif (stop_toggle == True) or (GPIO.input(LIMIT_SWITCH) != GPIO.LOW):
                 # E-stop activated, stop all motors
                 left_motor.stop_motor()
                 right_motor.stop_motor()
@@ -142,9 +144,10 @@ def btc_mode():
                 drum_motor.set_motor_speed()
                 flywheel_motor.PWM = 0
                 flywheel_motor.set_motor_speed()
+                print(stop_toggle)
 
                 if controller.get_button(3):
-                    stop_toggle = False
+                    stop_toggle = not stop_toggle
                     time.sleep(0.1)
                     print("E-stop deactivated.")
 
