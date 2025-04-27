@@ -44,6 +44,7 @@ class Motor:
     
     def set_motor_speed(self):
         # Set the motor speed using PWM. The speed is set based on the calculated PWM value.
+        self.PWM = max(-99, min(99, self.PWM))
         if self.PWM < 0:
             self.pins["backward"].ChangeDutyCycle(self.PWM)
         else:
