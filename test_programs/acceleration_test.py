@@ -9,6 +9,7 @@ from component_modules.controller_class import Controller
 # MOTOR LEFT pins: 12 backward, 13 forward
 # MOTOR RIGHT pins: 20 backward, 18 forward
 PWM = 99
+duration = 10  # (s)
 direction = "forward"
 filename = "output_data/acceleration_test.csv"
 
@@ -29,7 +30,7 @@ right_motor.PWM = PWM
 left_motor.set_motor_speed()
 right_motor.set_motor_speed()
 
-for i in range(1000):
+for i in range(100 * duration):
     elapsed_time = time.time() - start_time
     right_speed = right_encoder.speed()
     left_speed = left_encoder.speed()
