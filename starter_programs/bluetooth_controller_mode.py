@@ -101,9 +101,9 @@ def btc_mode():
             if (stop_toggle == False) & (GPIO.input(LIMIT_SWITCH) == GPIO.LOW):  # E-stop not activated
 
                 # Set motor speeds based on joystick input
-                left_speed = int(left_y * 30)
-                right_speed = int(left_y * 30)
-                turning_speed = int(left_x * 20) # If PWM is 100, motors stop
+                left_speed = int(left_y * 100)
+                right_speed = int(left_y * 100)
+                turning_speed = int(left_x * 100) # If PWM is 100, motors stop
 
                 stimput = ((left_y)**2 + (left_x)**2)**(1/2)
                 print(stimput)

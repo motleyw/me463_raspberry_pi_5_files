@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 
-from controller_class import Controller
-from encoder_class import Encoder
+from component_modules.controller_class import Controller
+from component_modules.encoder_class import Encoder
 
 class Motor:
     def __init__(self, pins, set_speed=0, coefficients=[], c_type="PID", encoder=None, pwm_frequency=1000, min=0):

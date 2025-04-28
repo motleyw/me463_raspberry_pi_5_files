@@ -3,7 +3,7 @@ import threading
 import time
 
 class Encoder:
-    def __init__(self, pin_a, pin_b, debounce_s=0.02, rads_per_count=0.06, update_interval=0.005):
+    def __init__(self, pin_a, pin_b, debounce_s=0.00, rads_per_count=0.06, update_interval=0.005):
         self.pin_a = pin_a
         self.pin_b = pin_b
         self.debounce_s = debounce_s  # sec

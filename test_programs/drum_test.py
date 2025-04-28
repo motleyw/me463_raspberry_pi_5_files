@@ -5,7 +5,7 @@ from component_modules.motor_class import Motor
 from component_modules.controller_class import Controller
 
 #PARAMETERS
-PWM = 99
+PWM = 90
 
 data = []
 start_time = time.time()

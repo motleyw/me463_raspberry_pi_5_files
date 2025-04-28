@@ -12,7 +12,7 @@ from component_modules.imu_class import IMU
 PWM = 99
 duration = 10  # (s)
 direction = "forward"
-filename = "output_data/imu_test.csv"
+filename = "output_data/imu_tests/30PWM_test1.csv"
 
 data = []
 start_time = time.time()
